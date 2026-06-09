@@ -430,6 +430,7 @@ dep_option(SDL_EXAMPLES_LINK_SHARED "link examples to shared SDL library" "${SDL
 if(VITA)
   set_option(VIDEO_VITA_PIB  "Build with PSVita piglet gles2 support" OFF)
   set_option(VIDEO_VITA_PVR  "Build with PSVita PVR gles/gles2 support" OFF)
+  set_option(VIDEO_VITA_VITAGL  "Build with PSVita vitaGL openGL support" OFF)
 endif()
 
 if(DOS)
@@ -936,7 +937,7 @@ if(SDL_ASSEMBLY)
         }]==] COMPILER_SUPPORTS_ARMSVE2)
       if(COMPILER_SUPPORTS_ARMSVE2)
         # IMPORTANT: As not all AArch64 processors support SVE2, we only
-        #            attach the following compilation option to SVE 
+        #            attach the following compilation option to SVE
         #            dedicated source files.
         set(SVE2_MARCH_FLAG "-march=armv8-a+sve2")
         set(HAVE_ARMSVE2 TRUE)
@@ -3068,6 +3069,18 @@ elseif(VITA)
       "${SDL3_SOURCE_DIR}/src/video/vita/*.h"
     )
     set(HAVE_SDL_VIDEO TRUE)
+
+    if(VIDEO_VITA_VITAGL)
+      set(SDL_VIDEO_VITA_VITAGL 1)
+      sdl_link_dependency(pib
+          LIBS
+            vitaGL
+            SceLibKernel_stub SceAppMgr_stub SceAppUtil_stub mathneon
+	          SceCommonDialog_stub m SceGxm_stub SceDisplay_stub SceSysmodule_stub
+	          zip z vitashark SceShaccCgExt taihen_stub SceShaccCg_stub
+	          SceKernelDmacMgr_stub SceCtrl_stub
+          )
+    endif()
 
     if(VIDEO_VITA_PIB)
       check_include_file(pib.h HAVE_PIGS_IN_BLANKET_H)

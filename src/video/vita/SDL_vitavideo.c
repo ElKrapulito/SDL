@@ -19,7 +19,6 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "SDL_internal.h"
 
 #ifdef SDL_VIDEO_DRIVER_VITA
 
@@ -118,6 +117,12 @@ static SDL_VideoDevice *VITA_Create(void)
         device->DestroyWindowFramebuffer = VITA_DestroyWindowFramebuffer;
     */
 
+#if defined(SDL_VIDEO_VITA_VITAGL)
+        device->GL_LoadLibrary = VITA_GL_LoadLibrary;
+        device->GL_CreateContext = VITA_GL_CreateContext;
+        device->GL_GetProcAddress = VITA_GL_GetProcAddress;
+#endif
+
 #if defined(SDL_VIDEO_VITA_PIB) || defined(SDL_VIDEO_VITA_PVR)
 #ifdef SDL_VIDEO_VITA_PVR_OGL
     if (SDL_GetHintBoolean(SDL_HINT_VITA_PVR_OPENGL, false)) {
@@ -156,7 +161,7 @@ VideoBootStrap VITA_bootstrap = {
     "vita",
     "VITA Video Driver",
     VITA_Create,
-    VITA_ShowMessageBox,
+    false,
     false
 };
 
@@ -412,7 +417,7 @@ void VITA_ShowScreenKeyboard(SDL_VideoDevice *_this, SDL_Window *window, SDL_Pro
     SDL_VideoData *videodata = _this->internal;
     SceInt32 res;
 
-#ifdef SDL_VIDEO_VITA_PVR
+#if defined(SDL_VIDEO_VITA_PVR)
 
     SceUInt32 libime_work[SCE_IME_WORK_BUFFER_SIZE / sizeof(SceInt32)];
     SceImeParam param;
@@ -510,7 +515,7 @@ void VITA_ShowScreenKeyboard(SDL_VideoDevice *_this, SDL_Window *window, SDL_Pro
 
 void VITA_HideScreenKeyboard(SDL_VideoDevice *_this, SDL_Window *window)
 {
-#ifndef SDL_VIDEO_VITA_PVR
+#if !defined(SDL_VIDEO_VITA_PVR)
     SDL_VideoData *videodata = _this->internal;
 
     SceCommonDialogStatus dialogStatus = sceImeDialogGetStatus();
@@ -533,7 +538,7 @@ void VITA_HideScreenKeyboard(SDL_VideoDevice *_this, SDL_Window *window)
 
 void VITA_PumpEvents(SDL_VideoDevice *_this)
 {
-#ifndef SDL_VIDEO_VITA_PVR
+#if !defined(SDL_VIDEO_VITA_PVR)
     SDL_VideoData *videodata = _this->internal;
 #endif
 
@@ -546,7 +551,7 @@ void VITA_PumpEvents(SDL_VideoDevice *_this)
     VITA_PollKeyboard();
     VITA_PollMouse();
 
-#ifndef SDL_VIDEO_VITA_PVR
+#if !defined(SDL_VIDEO_VITA_PVR)
     if (videodata->ime_active == true) {
         // update IME status. Terminate, if finished
         SceCommonDialogStatus dialogStatus = sceImeDialogGetStatus();

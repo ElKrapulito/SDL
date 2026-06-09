@@ -91,7 +91,7 @@ extern bool VITA_SetWindowGrab(SDL_VideoDevice *_this, SDL_Window *window, bool 
 extern void VITA_DestroyWindow(SDL_VideoDevice *_this, SDL_Window *window);
 
 #ifdef SDL_VIDEO_DRIVER_VITA
-#ifdef SDL_VIDEO_VITA_PVR_OGL
+#ifdef SDL_VIDEO_VITA_PVR_OGL || defined(SDL_VIDEO_VITA_VITAGL)
 // OpenGL functions
 extern bool VITA_GL_LoadLibrary(SDL_VideoDevice *_this, const char *path);
 extern SDL_GLContext VITA_GL_CreateContext(SDL_VideoDevice *_this, SDL_Window *window);
